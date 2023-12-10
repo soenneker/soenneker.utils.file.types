@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Types.Abstract;
 using Soenneker.Utils.File.Types.Dtos;
+using Soenneker.Utils.FileSync.Abstract;
 
 namespace Soenneker.Utils.File.Types;
 
@@ -17,13 +17,13 @@ public class FileTypeUtil : IFileTypeUtil
     public Lazy<List<string>> ArtworkTypes { get; set; }
     public Lazy<List<string>> AudioTypes { get; set; }
 
-    private readonly IFileUtil _fileUtil;
     private readonly ILogger<FileTypeUtil> _logger;
+    private readonly IFileUtilSync _fileUtilSync;
 
-    public FileTypeUtil(IFileUtil fileUtil, ILogger<FileTypeUtil> logger)
+    public FileTypeUtil(ILogger<FileTypeUtil> logger, IFileUtilSync fileUtilSync)
     {
-        _fileUtil = fileUtil;
         _logger = logger;
+        _fileUtilSync = fileUtilSync;
 
         SubtitleTypes = new Lazy<List<string>>(() => new List<string>
         {
@@ -33,7 +33,6 @@ public class FileTypeUtil : IFileTypeUtil
             ".ass",
             ".vtt"
         });
-
 
         VideoContainers = new Lazy<List<string>>(() => new List<string>
         {
@@ -94,7 +93,7 @@ public class FileTypeUtil : IFileTypeUtil
 
     public List<FileInfo> GetAllVideoFiles(string directory)
     {
-        List<FileInfo> files = _fileUtil.GetAllFileInfoInDirectoryRecursivelySafe(directory);
+        List<FileInfo> files = _fileUtilSync.GetAllFileInfoInDirectoryRecursivelySafe(directory);
 
         _logger.LogDebug("Beginning to filter for video files...");
 

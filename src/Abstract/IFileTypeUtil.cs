@@ -5,6 +5,9 @@ using System.IO;
 
 namespace Soenneker.Utils.File.Types.Abstract;
 
+/// <summary>
+/// A utility library for various operations on specific file types
+/// </summary>
 public interface IFileTypeUtil
 {
     List<FileInfo> GetAllVideoFiles(string directory);
