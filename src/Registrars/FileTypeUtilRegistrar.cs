@@ -15,19 +15,23 @@ public static class FileTypeUtilRegistrar
     /// Adds <see cref="IFileTypeUtil"/> as a scoped service. <para/>
     /// </summary>
     /// <remarks>Also tries to add <see cref="IFileUtilSync"/> as scoped.</remarks>
-    public static void AddFileTypeUtilAsScoped(this IServiceCollection services)
+    public static IServiceCollection AddFileTypeUtilAsScoped(this IServiceCollection services)
     {
-        services.TryAddScoped<IFileTypeUtil, FileTypeUtil>();
         services.AddFileUtilSyncAsScoped();
+        services.TryAddScoped<IFileTypeUtil, FileTypeUtil>();
+
+        return services;
     }
 
     /// <summary>
     /// Adds <see cref="IFileTypeUtil"/> as a singleton service. <para/>
     /// </summary>
     /// <remarks>Also tries to add <see cref="IFileUtilSync"/> as singleton.</remarks>
-    public static void AddFileTypeUtilAsSingleton(this IServiceCollection services)
+    public static IServiceCollection AddFileTypeUtilAsSingleton(this IServiceCollection services)
     {
-        services.TryAddSingleton<IFileTypeUtil, FileTypeUtil>();
         services.AddFileUtilSyncAsSingleton();
+        services.TryAddSingleton<IFileTypeUtil, FileTypeUtil>();
+
+        return services;
     }
 }
