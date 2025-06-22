@@ -9,7 +9,7 @@ using Soenneker.Utils.FileSync.Abstract;
 namespace Soenneker.Utils.File.Types;
 
 ///<inheritdoc cref="IFileTypeUtil"/>
-public class FileTypeUtil : IFileTypeUtil
+public sealed class FileTypeUtil : IFileTypeUtil
 {
     public Lazy<List<string>> VideoContainers { get; set; }
     public Lazy<Dictionary<string, MediaFormatSet>> ContainerMediaSets { get; set; }
@@ -122,14 +122,14 @@ public class FileTypeUtil : IFileTypeUtil
 
     public bool IsVideoFile(string filename)
     {
-        string extension = Path.GetExtension(filename).ToLower();
+        string extension = System.IO.Path.GetExtension(filename).ToLower();
 
         return VideoContainers.Value.Contains(extension);
     }
 
     public bool IsImageFile(string filename)
     {
-        string extension = Path.GetExtension(filename).ToLower();
+        string extension = System.IO.Path.GetExtension(filename).ToLower();
 
         return ArtworkTypes.Value.Contains(extension);
     }
