@@ -2,9 +2,9 @@
 
 namespace Soenneker.Utils.File.Types.Dtos;
 
-public class MediaFormatSet
+public sealed class MediaFormatSet
 {
-    public List<string> VideoCodecs { get; set; } = default!;
+    public List<string> VideoCodecs { get; set; } = null!;
 
-    public List<string> AudioCodecs { get; set; } = default!;
+    public List<string> AudioCodecs { get; set; } = null!;
 }
