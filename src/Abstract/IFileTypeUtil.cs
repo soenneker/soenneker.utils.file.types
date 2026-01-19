@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Soenneker.Utils.File.Types.Dtos;
 
 namespace Soenneker.Utils.File.Types.Abstract;
@@ -23,7 +24,7 @@ public interface IFileTypeUtil
     /// <remarks>
     /// Allocates a single list; for lower allocation and streaming semantics, prefer <see cref="EnumerateVideoFiles(string)"/>.
     /// </remarks>
-    List<FileInfo> GetAllVideoFiles(string directory);
+    ValueTask<List<FileInfo>> GetAllVideoFiles(string directory);
 
     /// <summary>
     /// Enumerates video files under the specified directory (recursively) without allocating a result list.
@@ -32,7 +33,7 @@ public interface IFileTypeUtil
     /// <returns>
     /// An <see cref="IEnumerable{T}"/> sequence of <see cref="FileInfo"/> entries whose extensions are recognized as video.
     /// </returns>
-    IEnumerable<FileInfo> EnumerateVideoFiles(string directory);
+    IAsyncEnumerable<FileInfo> EnumerateVideoFiles(string directory);
 
     /// <summary>
     /// Determines whether an extension represents a known subtitle type.
@@ -82,5 +83,5 @@ public interface IFileTypeUtil
     /// <param name="extension">The container file extension (e.g., ".mkv"). Case-insensitive.</param>
     /// <param name="set">When this method returns, contains the <see cref="MediaFormatSet"/> if found; otherwise, the default value.</param>
     /// <returns><c>true</c> if a known container mapping exists; otherwise, <c>false</c>.</returns>
-    bool TryGetContainerMediaSet(string extension, out MediaFormatSet set);
+    bool? TryGetContainerMediaSet(string extension, out MediaFormatSet set);
 }

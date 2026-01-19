@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Types.Abstract;
 using Soenneker.Utils.File.Types.Dtos;
@@ -64,9 +66,9 @@ public sealed class FileTypeUtil : IFileTypeUtil
         _fileUtil = fileUtil;
     }
 
-    public List<FileInfo> GetAllVideoFiles(string directory)
+    public async ValueTask<List<FileInfo>> GetAllVideoFiles(string directory)
     {
-        List<FileInfo> files = _fileUtil.GetAllFileInfoInDirectoryRecursivelySafe(directory);
+        List<FileInfo> files = await _fileUtil.GetAllFileInfoInDirectoryRecursivelySafe(directory).NoSync();
 
         _logger.LogDebug("Filtering for video files in {dir}. Total files: {count}", directory, files.Count);
 
@@ -90,9 +92,9 @@ public sealed class FileTypeUtil : IFileTypeUtil
         return result;
     }
 
-    public IEnumerable<FileInfo> EnumerateVideoFiles(string directory)
+    public async IAsyncEnumerable<FileInfo> EnumerateVideoFiles(string directory)
     {
-        List<FileInfo> files = _fileUtil.GetAllFileInfoInDirectoryRecursivelySafe(directory);
+        List<FileInfo> files = await _fileUtil.GetAllFileInfoInDirectoryRecursivelySafe(directory).NoSync();
 
         for (int i = 0; i < files.Count; i++)
         {
@@ -121,5 +123,5 @@ public sealed class FileTypeUtil : IFileTypeUtil
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsImageFile(string pathOrFileName) => _artworkExts.Contains(Path.GetExtension(pathOrFileName));
 
-    public bool TryGetContainerMediaSet(string extension, out MediaFormatSet? set) => _containerMediaSets.TryGetValue(extension, out set);
+    public bool? TryGetContainerMediaSet(string extension, out MediaFormatSet? set) => _containerMediaSets.TryGetValue(extension, out set);
 }
