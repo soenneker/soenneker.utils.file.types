@@ -1,21 +1,20 @@
 using Soenneker.Utils.File.Types.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 
 namespace Soenneker.Utils.File.Types.Tests;
 
-[Collection("Collection")]
-public class FileTypeUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class FileTypeUtilTests : HostedUnitTest
 {
     private readonly IFileTypeUtil _util;
 
-    public FileTypeUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public FileTypeUtilTests(Host host) : base(host)
     {
         _util = Resolve<IFileTypeUtil>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
