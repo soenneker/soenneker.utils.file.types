@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Frozen;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -15,17 +16,17 @@ namespace Soenneker.Utils.File.Types;
 public sealed class FileTypeUtil : IFileTypeUtil
 {
     // Fast, process-wide lookup tables (no per-instance cost)
-    private static readonly HashSet<string> _videoExts = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly FrozenSet<string> _videoExts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         ".asf", ".avi", ".mov", ".mkv", ".mp4", ".wmv", ".m2ts", ".ts", ".mpegts", ".3gpp",
         ".flv", ".wtv", ".mpeg", ".mpg", ".m4v", ".3gp", ".webm", ".divx"
-    };
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly HashSet<string> _subtitleExts = new(StringComparer.OrdinalIgnoreCase) { ".srt", ".smi", ".ssa", ".ass", ".vtt" };
+    private static readonly FrozenSet<string> _subtitleExts = new[] { ".srt", ".smi", ".ssa", ".ass", ".vtt" }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly HashSet<string> _artworkExts = new(StringComparer.OrdinalIgnoreCase) { ".png", ".jpeg", ".jpg", ".tbn", ".ext" };
+    private static readonly FrozenSet<string> _artworkExts = new[] { ".png", ".jpeg", ".jpg", ".tbn", ".ext" }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly HashSet<string> _audioExts = new(StringComparer.OrdinalIgnoreCase) { ".aac", ".alac", ".e-ac3", ".flac", ".mp3", ".m4a", ".wav" };
+    private static readonly FrozenSet<string> _audioExts = new[] { ".aac", ".alac", ".e-ac3", ".flac", ".mp3", ".m4a", ".wav" }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private static readonly Dictionary<string, MediaFormatSet?> _containerMediaSets = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -80,7 +81,7 @@ public sealed class FileTypeUtil : IFileTypeUtil
         {
             FileInfo fi = files[i];
             // Use Name + GetExtension to minimize substring size vs FullName
-            if (IsVideoExtension(Path.GetExtension(fi.Name)))
+            if (IsVideoExtension(Path.GetExtension(fi.Name.AsSpan())))
                 result.Add(fi);
         }
 
@@ -100,7 +101,7 @@ public sealed class FileTypeUtil : IFileTypeUtil
         {
             FileInfo fi = files[i];
 
-            if (IsVideoExtension(Path.GetExtension(fi.Name)))
+            if (IsVideoExtension(Path.GetExtension(fi.Name.AsSpan())))
                 yield return fi;
         }
     }
@@ -112,16 +113,19 @@ public sealed class FileTypeUtil : IFileTypeUtil
     public bool IsVideoExtension(string extension) => _videoExts.Contains(extension);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsVideoExtension(ReadOnlySpan<char> extension) => _videoExts.GetAlternateLookup<ReadOnlySpan<char>>().Contains(extension);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsImageExtension(string extension) => _artworkExts.Contains(extension);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsAudioExtension(string extension) => _audioExts.Contains(extension);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsVideoFile(string pathOrFileName) => _videoExts.Contains(Path.GetExtension(pathOrFileName));
+    public bool IsVideoFile(string pathOrFileName) => IsVideoExtension(Path.GetExtension(pathOrFileName.AsSpan()));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsImageFile(string pathOrFileName) => _artworkExts.Contains(Path.GetExtension(pathOrFileName));
+    public bool IsImageFile(string pathOrFileName) => _artworkExts.GetAlternateLookup<ReadOnlySpan<char>>().Contains(Path.GetExtension(pathOrFileName.AsSpan()));
 
     public bool? TryGetContainerMediaSet(string extension, out MediaFormatSet? set) => _containerMediaSets.TryGetValue(extension, out set);
 }
