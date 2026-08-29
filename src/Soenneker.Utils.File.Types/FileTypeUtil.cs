@@ -127,5 +127,11 @@ public sealed class FileTypeUtil : IFileTypeUtil
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsImageFile(string pathOrFileName) => _artworkExts.GetAlternateLookup<ReadOnlySpan<char>>().Contains(Path.GetExtension(pathOrFileName.AsSpan()));
 
+    /// <summary>
+    /// Maps a file extension to its container media category when a mapping is known.
+    /// </summary>
+    /// <param name="extension">The extension, with or without a leading period.</param>
+    /// <param name="set">Receives the mapped media category.</param>
+    /// <returns>True when mapped, false when known not to be a container, or null when unknown.</returns>
     public bool? TryGetContainerMediaSet(string extension, out MediaFormatSet? set) => _containerMediaSets.TryGetValue(extension, out set);
 }
