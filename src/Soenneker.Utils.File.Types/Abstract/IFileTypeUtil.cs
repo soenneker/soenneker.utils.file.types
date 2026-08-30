@@ -21,13 +21,11 @@ public interface IFileTypeUtil
     /// <returns>
     /// A materialized <see cref="List{T}"/> of <see cref="FileInfo"/> entries whose extensions are recognized as video.
     /// </returns>
-    /// <remarks>
-    /// Allocates a single list; for lower allocation and streaming semantics, prefer <see cref="EnumerateVideoFiles(string)"/>.
-    /// </remarks>
+    /// <remarks>The recursive scan skips inaccessible paths and reparse points.</remarks>
     ValueTask<List<FileInfo>> GetAllVideoFiles(string directory);
 
     /// <summary>
-    /// Enumerates video files under the specified directory (recursively) without allocating a result list.
+    /// Asynchronously enumerates video files from a materialized recursive file snapshot.
     /// </summary>
     /// <param name="directory">The root directory to scan.</param>
     /// <returns>
@@ -82,6 +80,6 @@ public interface IFileTypeUtil
     /// </summary>
     /// <param name="extension">The container file extension (e.g., ".mkv"). Case-insensitive.</param>
     /// <param name="set">When this method returns, contains the <see cref="MediaFormatSet"/> if found; otherwise, the default value.</param>
-    /// <returns><c>true</c> if a known container mapping exists; otherwise, <c>false</c>.</returns>
-    bool? TryGetContainerMediaSet(string extension, out MediaFormatSet set);
+    /// <returns><c>true</c> if a known container mapping exists; otherwise, <c>false</c>. The nullable return type is retained for API compatibility.</returns>
+    bool? TryGetContainerMediaSet(string extension, out MediaFormatSet? set);
 }
